@@ -1,0 +1,221 @@
+Step one:
+
+Since step 2 (in the code base beginning with the prefix 'step-two-...') involves inspecting the vector store
+locally, we first need to take a moment to Validate Vector Store Integration:
+
+Why is this important?
+It is crucial to verify that embeddings are stored correctly and indexed,
+which helps confirm that the vector store is functioning as expected.
+
+The steps for inspecting the vector store are listed below:
+1. Check OpenSearch Setup in AWS Console.
+2. OpenSearch Console
+-- Navigate to the Amazon OpenSearch Service on the AWS Console.
+-- Find your Serverless Collection or OpenSearch domain related to the vector store.
+-- In the Indices tab, ensure your vector index (e.g., bedrock-knowledge-base-default-index) is present.
+-- Check the Document Count to verify that the embeddings have been stored correctly in the index.
+-- You can run some manual queries here to inspect the vector data and index health.
+
+Steps 2 through 5 are named accordingly in this directory, and here is what they do:
+
+-----Step Two: Inspect Vector Store Locally-----
+How it works:
+
+This step involves inspecting the vector store to verify that the data has been correctly saved and
+can be loaded properly. You'll be running a script that loads the vector store into memory and checks how many
+vectors (i.e., embeddings) have been stored.
+
+What to expect:
+
+If the vector store exists, you should see a message indicating that it was found. The script will then
+print the number of embeddings stored in the vector store using `ntotal`. This ensures that the vector store is
+functioning correctly and that the embeddings have been correctly saved.
+
+-----Step Three: Run Similarity Searches Using the Vector Store-----
+How it works:
+
+This step tests the ability of the vector store to perform similarity searches. You'll provide a user
+query in natural language (e.g., "show me all the titles in the US region") to see how well the vector store
+finds relevant metadata and documents that match the input.
+
+What to expect:
+
+If the vector store loads correctly, you should see it perform a similarity search against the user query.
+The output will contain the metadata and page content from the vector store that match the query. This is a key
+step in validating whether your embeddings and vector store are suitable for generating SQL queries.
+
+-----Step Four: Test Multiple Queries with the Vector Store-----
+How it works:
+
+This step is an extended test of the vector store. It runs multiple user queries to verify that the vector
+store is working consistently. It allows you to test different kinds of user inputs to ensure that they
+all yield relevant results.
+
+What to expect:
+
+For each query in the list (test_queries), you should see the returned metadata and page content.
+The results will show if your vector store properly understands different queries and how well it can pull relevant
+data each time. You can use this to gauge if the vector store needs any fine-tuning to improve its responses.
+
+-----Step Five: Generate SQL Queries from User Input-----
+
+How it works:
+
+This step introduces a function (generate_sql_query) that takes the user’s natural language query
+and generates an appropriate SQL query based on the metadata returned by the vector store.
+After generating the SQL query, it will optionally execute the query using Amazon Athena.
+
+What to expect:
+
+The output should first include a generated SQL query based on the user input and the information provided by
+the vector store. The script will then execute the generated SQL query in Athena (if enabled).
+You can verify that the generated SQL query is correct by analyzing the generated SQL, and
+checking the Athena output for successful execution.
+
+------------------------------------------------------------------------------------------------------------------------
+
+This is my attempt to create a comprehensive set of notes so that the reader/user can follow
+along with the code in this repository. In other words, below are the steps for setting up
+your PyCharm IDE so that the reader/user can configure their instance to successfully run the code locally.
+
+
+1. AWS Authentication (for Windows OS on AWS Workspaces):
+
+Download the AWS CLI installer for Windows: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+check to see if AWS CLI is running:
+aws --version
+
+aws configure (make sure that these keys are linked to the account that you are using).
+
+This will create an AWS credentials file at ~/.aws/credentials on your system.
+
+After this, your environment will be authenticated with AWS, and you should be able to run Athena, S3, and
+Glue commands from PyCharm using the AWS SDK or boto3.
+
+
+
+2. Check IAM Role/Policy:
+
+create new IAM role with the following polices:
+AmazonAthenaFullAccess (for Athena)
+AmazonS3FullAccess (for S3)
+AWSGlueConsoleFullAccess (for Glue)
+
+Next, create a new access key from AWS console.
+The option to create a new access key is available in the AWS console under the IAM service.
+Be sure to make note of your access key and secret access key. The latter is only shown once, so make sure to save it in a secure location.
+
+Next, from your IDE (for me, that'd be PyCharm), add configure the new keys with our sandbox account using your IDE's terminal:
+aws configure
+
+access key:
+secret access key:
+region: us-east-1
+output: json
+
+verify that the keys are working by running the following commands:
+
+S3:
+aws s3 ls
+
+Athena:
+aws athena list-databases --catalog-name AwsDataCatalog
+
+Glue:
+aws glue get-databases
+
+
+What to Expect:
+For S3, it should list your S3 buckets.
+For Athena, it should return the databases in your Athena catalog.
+For Glue, it should show you the Glue databases available.
+
+
+
+3. Run Locally but Connected to AWS:
+
+Connecting to AWS from your local environment allows real-time integration and execution of services like S3,
+Athena, and Glue, even when developing and debugging code locally.
+
+Note to self: List the actual steps or examples of commands you need to run here, such as setting environment
+variables, ensuring the IDE is correctly configured, or using certain tools within PyCharm.
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+Diving into debugging is an excellent way to gain a deep understanding of how the code works.
+
+Step-by-Step Guide to Debugging
+Let's start with some key concepts of debugging in PyCharm, which is the IDE we're using.
+
+We'll explore the following techniques:
+
+Setting Breakpoints
+Running the Debugger
+Step In, Step Over, and Step Out
+Examining Variables
+Adding Watches and Conditions
+
+We'll walk through these concepts using one of your scripts.
+For now, let's choose step-five-create-fct-to-generate-sql-queries-from-user-input.py
+since it involves several moving parts (e.g., vector store, embeddings, SQL generation) and provides a good
+scenario for demonstrating these techniques.
+
+
+1. Setting Breakpoints
+A breakpoint is a marker you set on a line of code where you want the execution to pause.
+
+This allows you to examine the current state of the program. To set a breakpoint in PyCharm, simply click to the left of the line number in the code editor. You should see a red dot appear, indicating that a breakpoint has been set.
+
+Let's set some initial breakpoints in your main() function:
+
+## Set a breakpoint at the line where the embeddings are initialized: embeddings = language_model.embeddings  # Initialize embeddings
+
+## Another at the similarity search: results = vector_store.similarity_search(query=user_query, k=5)
+
+## One more at the SQL generation: sql_query = generate_sql_query(user_query, metadata)
+
+These breakpoints will help you inspect how the embeddings are being used, check if the vector store is
+returning proper results, and understand how SQL queries are generated based on the user input.
+
+
+2. Running the Debugger
+Once your breakpoints are set, click the debug icon (a bug symbol) instead of the normal "Run" button.
+The debugger will run your script and pause execution at the first breakpoint.
+You'll see the current values of variables and can interactively analyze what’s happening.
+
+
+3. Step In, Step Over, and Step Out
+
+## Step In (F7): Use this to move into a function call. If you're at the line where
+generate_sql_query(user_query, metadata) is called, using Step In will let you see the exact execution of that function.
+
+## Step Over (F8): This moves to the next line of code without diving into function calls. Use this when
+you’re not interested in the internal details of the function and just want to see what happens next.
+
+## Step Out (Shift + F8): If you’re inside a function and want to return to the calling function, use Step Out.
+This is useful if you've stepped into a function by mistake or don’t need to see the rest of it.
+
+Example: Once you've hit the breakpoint at the similarity search line, press F7 to step into the similarity_search()
+method. This will let you observe how the search works and what parameters are used internally.
+
+
+4. Examining Variables
+PyCharm’s debugger has a Variables pane that shows you the current state of all local variables.
+
+When you hit a breakpoint, look at the Variables pane to see the values of user_query, embeddings, vector_store, etc.
+
+You can also hover over variables in the editor to see their current values.
+
+Goals: Check if the embeddings object contains the data you expect and ensure that results from the vector store
+similarity search return a reasonable set of matches.
+
+
+5. Adding Watches and Conditions
+Watches: If you want to monitor specific variables or expressions, you can add them to the Watches pane.
+This way, you don't need to keep searching for them in the Variables pane.
+
+Conditional Breakpoints: Right-click on a breakpoint and select "Set Condition". This allows you to stop
+execution only when a specific condition is true. Example: Add a condition to the breakpoint at the SQL generation
+step, like user_query == "highest rated movies". This will help you focus on specific cases.
