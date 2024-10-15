@@ -11,12 +11,11 @@ import numpy as np
 import boto3
 
 #from langchain.text_splitter import RecursiveCharacterTextSplitter
-
 #from langchain_community.embeddings import BedrockEmbeddings
-
 # from langchain_community.document_loaders import PyPDFLoader, PyPDFDirectoryLoader
 from langchain_community.vectorstores import OpenSearchVectorSearch
 from langchain_community.document_loaders import JSONLoader
+
 
 logger = logging.getLogger()
 #logging.basicConfig(format='%(asctime)s,%(module)s,%(processName)s,%(levelname)s,%(message)s', level=logging.INFO, stream=sys.stderr)
@@ -29,17 +28,19 @@ from boto_client import Clientmodules
 #from opensearchpy import AWSV4SignerAuth
 """
 
-    Connecting OpenSearch in AWS done in multiple ways. here we are going to use userid and password to connect.
-    Opensearch cluster can be inside VPC or Public. Recommended in inside VPC for all good reasons. Here for this demo I have mdae public.
-    Opensearch is massively sclabale search engine , I have used it mostly for UI applications to render data in fraction of second. However it can also be used for Vector store.
-    It provides simlarity search using KNN, Cosine or more. We will have separate document for that.
-    Here we will read PDF file and store in Openserach so that we can use that in our RAG Architecture.
+    Connecting OpenSearch in AWS done in multiple ways. Here we are going to use userid and password to connect.
+    Opensearch cluster can be inside VPC or Public. Recommended is inside VPC for all good reasons. 
+    Here for this demo I have made public. Opensearch is massively scalable search engine , 
+    I have used it mostly for UI applications to render data in fraction of second. However it can also 
+    be used for Vector store. It provides similarity search using KNN, Cosine or more. 
+    We will have separate document for that. Here we will read PDF file and store in Openserach so that we can use 
+    that in our RAG Architecture.
 
 """
 
 
 # Here Keeping the required parameter. can be used from config store.
-##http_auth = ('llm**ector','@l****S1')
+# http_auth = ('llm**ector','@l****S1')
 opensearch_domain_endpoint = ''
 aws_region = 'us-east-1'
 index_name = 'bedrock-knowledge-base-default-index'
@@ -51,7 +52,7 @@ credentials = boto3.Session().get_credentials()
 ##auth = AWSV4SignerAuth(credentials, region, service)
 
 
-awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service,session_token=credentials.token)
+awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 logger.info(awsauth)
 i = 0
 
@@ -63,7 +64,7 @@ class EmbeddingBedrockOpenSearch:
         print(self.language_model)
         self.llm = self.language_model.llm
         self.embeddings = self.language_model.embeddings
-        self.opensearch_domain_endpoint=domain
+        self.opensearch_domain_endpoint = domain
         self.http_auth = awsauth     
         self.vector_name = vector_name
         self.fieldname = fieldname
@@ -88,7 +89,7 @@ class EmbeddingBedrockOpenSearch:
 
      
         exists = aos_client.indices.exists(index_name)
-        print("exist check",exists)
+        print("exist check", exists)
         return exists
 
     
@@ -97,7 +98,7 @@ class EmbeddingBedrockOpenSearch:
 
         docs = OpenSearchVectorSearch.from_documents(embedding=self.embeddings,
                                                     opensearch_url=self.opensearch_domain_endpoint,
-                                                     http_auth=self.http_auth,
+                                                    http_auth=self.http_auth,
                                                     documents=documents,
                                                     index_name=index_name,
                                                     engine="faiss")
@@ -114,7 +115,7 @@ class EmbeddingBedrockOpenSearch:
         else:
             logger.info(f'index :{index_name} Got created')
             
-    def getDocumentfromIndex(self,index_name: str):
+    def getDocumentfromIndex(self, index_name: str):
         try:
             logger.info("the opensearch_url is " + self.opensearch_domain_endpoint + "") 
             logger.info(self.http_auth)   
@@ -132,14 +133,14 @@ class EmbeddingBedrockOpenSearch:
         except Exception:
             print(traceback.format_exc())
     
-    def getSimilaritySearch(self,user_query: str,vcindex ):
+    def getSimilaritySearch(self, user_query: str, vcindex ):
         # user_query='show me the top 10 titile by maximum votes'
         
-        docs = vcindex.similarity_search(user_query,k=200, vector_field = self.vector_name, text_field = self.fieldname)
+        docs = vcindex.similarity_search(user_query, k=200, vector_field = self.vector_name, text_field = self.fieldname)
         # print(docs[0].page_content)
         return docs
     
-    def format_metadata(self,metadata):
+    def format_metadata(self, metadata):
         docs = []
         # Remove indentation and line feed
         for elt in metadata:
@@ -161,7 +162,7 @@ class EmbeddingBedrockOpenSearch:
         result = result.replace('}', '}}')
         return result
     
-    def get_data(self,metadata):
+    def get_data(self, metadata):
         docs = []
         # Remove indentation and line feed
         for elt in metadata:
@@ -185,18 +186,18 @@ class EmbeddingBedrockOpenSearch:
 
 def main():
     print('main() executed')
-    index_name1 = 'bedrock-knowledge-base-default-index'    
-    domain = 'https://OPENSEARCH.us-east-1.aoss.amazonaws.com'
-    vector_field = 'bedrock-knowledge-base-default-vector'
+    index_name1 = 'text_to_sql_index'
+    domain = 'https://qf3djb3b07mbiqul9t0d.us-east-1.aoss.amazonaws.com'
+    vector_field = 'embeddings_vector'
     fieldname = 'id'
     try:
         ebropen = EmbeddingBedrockOpenSearch (domain, vector_field, fieldname)
-        ebropen.check_if_index_exists(index_name=index_name1, region='us-east-1',host=domain,http_auth=awsauth )
+        ebropen.check_if_index_exists(index_name=index_name1, region='us-east-1', host=domain, http_auth=awsauth)
 
         vcindxdoc=ebropen.getDocumentfromIndex(index_name=index_name1)
 
         user_query='show me all the titles in US region'
-        document=ebropen.getSimilaritySearch(user_query,vcindex = vcindxdoc )
+        document=ebropen.getSimilaritySearch(user_query, vcindex = vcindxdoc)
         ##print(document)
 
         #result = ebropen.format_metadata(document)
