@@ -1,75 +1,82 @@
 [
     {
-"database_name": "text2sql",
-"table_name": "title",
+"database_name": "imdb_stg",
+"table_name": "basics",
  "table_description": "This dataset contains title details.",
- "relationships": {
+      "metadata_fields": {
+        "id": "tconst"
+    },
+    "relationships": {
             "primary_key": [
                 {
-                    "column_name": "titleId",
+                    "column_name": "tconst",
                     "constraint": "not null"
                 },
-                {
-                    "column_name": "ordering",
-                    "constraint": "not null"
-                }
                 ],
                 "foreign_keys": [
                 {
-                    "database_name": "text2sql",
-                    "table_name": "title_ratings",
+                    "database_name": "imdb_stg",
+                    "table_name": "ratings",
                     "join_on_column": "tconst"
                 }
                 ]
                },
                "columns": [
             {
-                "Name": "titleId",
+                "Name": "tconst",
                 "Type": "string",
                 "Comment": "This is the unique identifier of the title"
             },
             {
-                "Name": "ordering",
-                "Type": "integer",
-                "Comment": "This is the uniquely identify rows for a given titleId"
+                "Name": "titletype",
+                "Type": "string",
+                "Comment": "Short film, movie, tvseries, tvmovie, tvminiseries, tvspecial, tvshort, video, videogame"
             },
             {
-                "Name": "title",
+                "Name": "primarytitle",
                 "Type": "string",
                 "Comment": "The localized title"
             },
             {
-                "Name": "region",
+                "Name": "originaltitle",
                 "Type": "string",
-                "Comment": "region for this version of the title"
+                "Comment": "alternative title (if applicable)"
             },
             {
-                "Name": "language",
+                "Name": "isadult",
                 "Type": "string",
-                "Comment": "the language of the title"
+                "Comment": "I assume that this is some sort of rating system"
             },
             {
-                "Name": "types",
+                "Name": "startyear",
                 "Type": "string",
-                "Comment": "Enumerated set of attributes for this alternative title. One or more of the following: alternative, dvd, festival, tv, video, working, original, imdbDisplay. New values may be added in the future without warning"
+                "Comment": "when filming began"
             },
             {
-                "Name": "attributes",
+                "Name": "endyear",
                 "Type": "string",
-                "Comment": "Additional terms to describe this alternative title, not enumerated"
+                "Comment": "when filming ended"
             },
             {
-                "Name": "isOriginalTitle",
+                "Name": "runtimeminutes",
                 "Type": "string",
-                "Comment": "0: not original title; 1: original title"
+                "Comment": "length of the production"
+            },
+            {
+                "Name": "genres",
+                "Type": "string",
+                "Comment": "comedy, short, documentary, etc"
             }
             ]
             },
             {
-"database_name": "text2sql",
-"table_name": "title_rating",
+"database_name": "imdb_stg",
+"table_name": "ratings",
  "table_description": "This dataset contains ratings details",
- "relationships": {
+      "metadata_fields": {
+        "id": "tconst"
+    },
+    "relationships": {
             "primary_key": [
                 {
                     "column_name": "tconst",
@@ -94,7 +101,6 @@
                 "Comment": "Number of votes the title has received"
             }
             ]
-        }  
+        }
     ]
-               
-  
+
