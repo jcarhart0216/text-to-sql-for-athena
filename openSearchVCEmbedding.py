@@ -25,15 +25,7 @@ from llm_basemodel import LanguageModel
 from boto_client import Clientmodules
 
 # from opensearchpy import AWSV4SignerAuth
-"""
 
-    Connecting OpenSearch in AWS done in multiple ways. here we are going to use userid and password to connect.
-    Opensearch cluster can be inside VPC or Public. Recommended in inside VPC for all good reasons. Here for this demo I have mdae public.
-    Opensearch is massively scalable search engine , I have used it mostly for UI applications to render data in fraction of second. However it can also be used for Vector store.
-    It provides simlarity search using KNN, Cosine or more. We will have separate document for that.
-    Here we will read PDF file and store in Openserach so that we can use that in our RAG Architecture.
-
-"""
 
 # Here Keeping the required parameter. can be used from config store.
 opensearch_domain_endpoint = 'https://e0hc00i67ga6mpn1xkxa.us-east-1.aoss.amazonaws.com'
