@@ -112,12 +112,15 @@ def userinput(user_query):
 
     details = f"""It is important that the SQL query complies with Athena syntax.
               
-              For our testing purposes, please only use the following data source(s), database(s) and table(s):
+              For our testing purposes, please use ONLY the following data source(s), database(s) and table(s):
               
               Data Source: AWSDataCatalog              
               Database: imdb_stg
               Tables: basics, ratings
+              Columns: Use only the columns present in the tables mentioned above
               Unique ID: tconst
+              
+              Think of these parameters as the only available resources with which you have to answer the question. 
               
               During a join, if two column names are the same please use alias (example: basics.tconst in select 
               statement). It is also important to pay attention to and not alter column format: if a column is string, 
@@ -142,9 +145,7 @@ def userinput(user_query):
 
 
 def main():
-    # user_query = 'How many records in our database are from the year 1892?'
-    user_query = 'What was the total number of votes for all movies with the word clown in the title?'
-    # user_query = 'I need all of the unique ids from the Animation genre with an average rating of 5 or higher and at least 1000 votes'
+    user_query = 'I need all of the unique ids from the Animation genre with an average rating of 5 or higher and at least 1000 votes'
     querygenerated = userinput(user_query)
 
     if querygenerated:
