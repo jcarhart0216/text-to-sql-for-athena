@@ -143,8 +143,8 @@ def userinput(user_query):
 
 def main():
     # user_query = 'How many records in our database are from the year 1892?'
-    # user_query = 'What was the total number of votes for all movies with the word clown in the title?'
-    user_query = 'I need all of the unique ids from the Animation genre with an average rating of 5 or higher and at least 1000 votes'
+    user_query = 'What was the total number of votes for all movies with the word clown in the title?'
+    # user_query = 'I need all of the unique ids from the Animation genre with an average rating of 5 or higher and at least 1000 votes'
     querygenerated = userinput(user_query)
 
     if querygenerated:
