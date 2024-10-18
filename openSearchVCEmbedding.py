@@ -185,14 +185,14 @@ def main():
 
         vcindxdoc = ebropen.getDocumentfromIndex(index_name=index_name1)
 
-        user_query = 'show me all the titles in US region'
-        document = ebropen.getSimilaritySearch(user_query, vcindex=vcindxdoc)
+        # user_query = 'show me all the titles in US region'
+        # document = ebropen.getSimilaritySearch(user_query, vcindex=vcindxdoc)
         ##print(document)
 
         # result = ebropen.format_metadata(document)
-        result = ebropen.get_data(document)
+        # result = ebropen.get_data(document)
 
-        print(result)
+        # print(result)
     except Exception as e:
         print(e)
         traceback.print_exc()
